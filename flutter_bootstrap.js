@@ -35,4 +35,14 @@ if (!window._flutter) {
 }
 _flutter.buildConfig = {"engineRevision":"4c525dac5ebe5971c5708ef73558ed8edcf4a362","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
+
+// Give the compiled application a release-specific URL. Mobile browsers can
+// otherwise reuse main.dart.js from an earlier Systems Studio publication
+// even after its legacy service worker has been removed.
+for (const build of _flutter.buildConfig.builds) {
+  if (build.mainJsPath) {
+    build.mainJsPath = `${build.mainJsPath}?release=20260908-1`;
+  }
+}
+
 _flutter.loader.load();
