@@ -41,6 +41,36 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
-  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Systems Studio is updated frequently while its learning libraries grow.
+    // Older Flutter releases installed an offline service worker, which can
+    // leave phones running a previous edition after a new site is published.
+    // Remove that legacy cache before loading the current application.
+    (async () => {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((item) => item.unregister()));
+      }
+
+      if ('caches' in window) {
+        const legacyFlutterCaches = new Set([
+          'flutter-app-cache',
+          'flutter-temp-cache',
+          'flutter-app-manifest'
+        ]);
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames
+            .filter((name) => legacyFlutterCaches.has(name))
+            .map((name) => caches.delete(name))
+        );
+      }
+
+      const loader = document.createElement('script');
+      loader.src = 'flutter_bootstrap.js';
+      loader.async = true;
+      document.body.appendChild(loader);
+    })();
+  </script>
 </body>
 </html>
